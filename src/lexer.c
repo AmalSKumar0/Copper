@@ -84,7 +84,7 @@ token_T* lexer_collect_id(lexer_T* lexer){
     char* value = calloc(1, sizeof(char));
     value[0] = '\0';
     while(isalnum(lexer->c)){
-        printf("Char: %c\n", lexer->c);
+        // printf("Char: %c\n", lexer->c);
         char* s = lexer_get_current_char_as_string(lexer);
         value = realloc(value, (strlen(value) + strlen(s) + 1)*sizeof(char));
         strcat(value, s);
