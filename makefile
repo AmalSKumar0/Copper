@@ -16,6 +16,6 @@ install:
 	copy .\copper.exe $(INSTALL_DIR)
 
 clean: 
-	-rm *.out
-	-rm *.o
-	-rm src/*.o
+	-del $(exec)
+	-del *.o
+	-del src\*.o
