@@ -1,3 +1,3 @@
-var name1 = "Amal s kumar";
-var name2 = "Baka";
+var name1 = "Hello World!";
+var name2 = "I am copper, your friendly Programming language";
 print(name1,name2);
