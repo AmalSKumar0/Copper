@@ -1,2 +1,2 @@
-name = "Amal s kumar";
+var name = "Amal s kumar";
 print(name);

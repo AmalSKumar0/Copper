@@ -9,6 +9,7 @@ typedef struct AST_STRUCT{
         AST_FUNCTION_CALL,
         AST_STRING,
         AST_COMPOUND,
+        AST_NOOP,
     }type;
 
     /* AST_VARIABLE_DEFINITION */

@@ -2,17 +2,17 @@
 #include "include/lexer.h"
 #include "include/parser.h"
 #include "include/AST.h"
+#include "include/visitor.h"
+#include "include/io.h"
 
 int main(int arg, char* argv[]){
     lexer_T* lexer = init_lexer(
-        "var name = \"Amal s kumar\";\n"
-        "print(name);"
+        get_file_contents(argv[1])
     );
 
     parser_T* parser = init_parser(lexer);
-    AST_T* ast = parser_parse(parser);
-
-    printf("%d\n", ast->type); // should print AST_COMPOUND which is 4
-    printf("%d\n", ast->compound_size);
+    AST_T* root = parser_parse(parser);
+    visitor_T* visitor = visitor_init();
+    visitor_visit(visitor, root);
     return 0;
 }
