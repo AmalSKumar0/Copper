@@ -13,6 +13,7 @@ INSTALL_DIR = C:\tools
 
 install:
 	make
+	copy .\copper $(INSTALL_DIR)
 	copy .\copper.exe $(INSTALL_DIR)
 
 clean: 

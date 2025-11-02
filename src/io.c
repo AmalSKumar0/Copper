@@ -1,8 +1,16 @@
 #include "include/io.h"
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
-char* get_file_contents(const char* filename){
+char* get_file_contents(const char* filename) {
+    // Check if filename ends with ".cop"
+    const char* extension = strrchr(filename, '.'); // find last '.'
+    if (extension == NULL || strcmp(extension, ".cop") != 0) {
+        fprintf(stderr, "Error: Invalid file type. Expected a .cop file.\n");
+        return NULL;
+    }
+
     FILE* file = fopen(filename, "r");
     if (file == NULL) {
         perror("Error opening file");
