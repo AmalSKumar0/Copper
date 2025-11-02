@@ -27,11 +27,14 @@ parser_T* init_parser(lexer_T* lexer){
     parser_T* parser = calloc(1, sizeof(struct PARSER_STRUCT));
     parser->lexer = lexer;
     parser->current_token = lexer_get_next_token(lexer);
+    parser->previous_token = parser->current_token;
+    
     return parser;
 }
 
 void parser_eat(parser_T* parser, int token_type){
     if(parser->current_token->type == token_type){
+        parser->previous_token = parser->current_token;
         parser->current_token = lexer_get_next_token(parser->lexer);
     }else{
         printf("Error: Unexpected token type %d, expected %d\n", parser->current_token->type, token_type);
@@ -46,11 +49,6 @@ AST_T* parser_parse(parser_T* parser){
 AST_T* parser_parse_statement(parser_T* parser){
     switch(parser->current_token->type){
         case TOKEN_ID: return parser_parse_id(parser);
-        case TOKEN_STRING:
-            return parser_parse_string(parser);
-        default:
-            printf("Error: Unexpected token type in statement: %d\n", parser->current_token->type);
-            exit(1);
     }
 }
 
@@ -58,6 +56,7 @@ AST_T* parser_parse_statement(parser_T* parser){
 AST_T* parser_parse_expr(parser_T* parser){
     switch(parser->current_token->type){
         case TOKEN_STRING: return parser_parse_string(parser);
+        case TOKEN_ID: return parser_parse_id(parser);
     }
 }
 
@@ -78,7 +77,30 @@ AST_T* parser_parse_variable(parser_T* parser){
     return ast_variable;
 }
 
-AST_T* parser_parse_function_call(parser_T* parser){}
+AST_T* parser_parse_function_call(parser_T* parser){
+    AST_T* function_call = init_ast(AST_FUNCTION_CALL);
+    parser_eat(parser, TOKEN_LPAREN);
+    function_call->function_name = parser->previous_token->value;   
+
+
+    function_call->function_arguments = calloc(1, sizeof(struct AST_STRUCT*));
+    
+   
+    AST_T* ast_expr = parser_parse_expr(parser);
+    function_call->function_arguments[0] = ast_expr;
+
+    while(parser->current_token->type == TOKEN_COMMA){
+        parser_eat(parser, TOKEN_COMMA);
+        AST_T* ast_expr = parser_parse_expr(parser);
+        function_call->function_arguments = realloc(function_call->function_arguments, (function_call->function_arguments_size + 1) * sizeof(struct AST_STRUCT*));
+        function_call->function_arguments[function_call->function_arguments_size] = ast_expr;
+        function_call->function_arguments_size += 1;
+    }
+    parser_eat(parser, TOKEN_RPAREN);
+
+    return function_call;
+}
+
 AST_T* parser_parse_string(parser_T* parser){
     AST_T* ast_string = init_ast(AST_STRING);
     ast_string->string_value = parser->current_token->value;
@@ -86,6 +108,7 @@ AST_T* parser_parse_string(parser_T* parser){
     parser_eat(parser, TOKEN_STRING);
     return ast_string;
 }
+
 AST_T* parser_parse_variable_definition(parser_T* parser){
     parser_eat(parser, TOKEN_ID); // eat 'print' or variable name
     char* variable_declaration_variable_name = parser->current_token->value;
@@ -99,6 +122,7 @@ AST_T* parser_parse_variable_definition(parser_T* parser){
 
     return variable_definition;
 }
+
 AST_T* parser_parse_id(parser_T* parser){
     if(strcmp(parser->current_token->value, "var") == 0){
         return parser_parse_variable_definition(parser);

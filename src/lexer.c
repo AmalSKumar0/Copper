@@ -29,7 +29,6 @@ token_T* lexer_get_next_token(lexer_T* lexer){
     while(lexer->c != '\0' ){
         if(lexer->c == ' ' || lexer->c == 10){
             lexer_skip_whitespace(lexer);
-            continue;
         }
 
         if(isalnum(lexer->c)){
@@ -49,16 +48,11 @@ token_T* lexer_get_next_token(lexer_T* lexer){
                 return lexer_advance_with_token(lexer,init_token(TOKEN_LPAREN, lexer_get_current_char_as_string(lexer))); 
             case ')':
                 return lexer_advance_with_token(lexer,init_token(TOKEN_RPAREN, lexer_get_current_char_as_string(lexer))); 
-            default:
-                if((lexer->c >= 'a' && lexer->c <= 'z') || (lexer->c >= 'A' && lexer->c <= 'Z') || lexer->c == '_'){
-                    return lexer_collect_string(lexer);
-                }
-                break;
+            case ',':
+                return lexer_advance_with_token(lexer,init_token(TOKEN_COMMA, lexer_get_current_char_as_string(lexer))); 
         }
-
-        lexer_advance(lexer);
     }
-    return NULL; 
+    return init_token(TOKEN_EOF, "\0"); 
 }
 
 token_T* lexer_advance_with_token(lexer_T* lexer, token_T* token){
